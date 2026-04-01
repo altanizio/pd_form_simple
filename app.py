@@ -468,6 +468,7 @@ if st.session_state.iniciado:
         df_resultado.insert(10, "Nome entrevistado", str(nome_entrevistado))
         df_resultado.insert(11, "Origem", str(origem))
         df_resultado.insert(12, "Destino", str(destino))
+        df_resultado.insert(13, "Observações", str(observacoes))
 
         st.dataframe(df_resultado)
 
