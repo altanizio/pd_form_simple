@@ -165,6 +165,11 @@ modos_propostos_img = [
     modos_opcoes_img[modo] for modo in modos_propostos if modo in modos_opcoes_img
 ]
 
+observacoes = st.text_input(
+    "Observações adicionais (opcional)",
+    key="observacoes",
+)
+
 
 st.markdown("**Campos com (*) são obrigatórios.**")
 
@@ -181,8 +186,11 @@ campos_ok = all(
     [
         nome != "",
         produto != "",
-        modos_utilizados is not None,
-        modos_propostos is not None,
+        #modos_utilizados is not None,
+        #modos_propostos is not None,
+        nome_entrevistado != "",
+        origem != "",
+        destino != "",
         custo != 0.0,
         tempo > 0,
     ]
