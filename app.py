@@ -36,6 +36,7 @@ niveis = niveis[["Variável", "Código", "Nível", "Tipo"]]
 st.title("Formulário para Pesquisa de Preferência Declarada")
 
 st.markdown("Se o entrevistado tiver 20 minutos, edite os níveis abaixo para refletir a realidade da empresa dele. Caso contrário, deixe os níveis como estão e avance para o formulário.")
+st.markdown("Caso os níveis sejam editados, seguir a recomendação a seguir: Os valores das variáveis do cenário B referem-se ao respondido pelo entrevistado, enquanto os valores do cenário A são equivalentes a metade do valor do cenário B.")
 
 editar = st.radio("Deseja editar os níveis?", ["Não", "Sim"], horizontal=True)
 if editar == "Sim":
