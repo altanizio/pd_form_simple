@@ -476,7 +476,7 @@ if st.session_state.iniciado:
         st.dataframe(df_resultado)
 
         st.success(
-            "Você completou todos os cartões! Baixe os resultados no botão abaixo.\nApós baixar, por favor, envie o arquivo para o e-mail: <a href='mailto: pli2050@sp.gov.br'>pli2050@sp.gov.br</a>"
+            "Você completou todos os cartões! Baixe os resultados no botão abaixo.\nApós baixar, por favor, envie o arquivo para o e-mail: pli2050@sp.gov.br"
         )
 
         buffer = io.BytesIO()
