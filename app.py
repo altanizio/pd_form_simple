@@ -5,6 +5,8 @@ import io
 from PIL import Image
 from io import BytesIO
 import base64
+import dropbox
+from datetime import datetime
 
 
 # Configurações da página
@@ -36,7 +38,6 @@ niveis = niveis[["Variável", "Código", "Nível", "Tipo"]]
 st.title("Formulário para Pesquisa de Preferência Declarada")
 
 st.markdown("Se o entrevistado tiver 20 minutos, edite os níveis abaixo para refletir a realidade da empresa dele. Caso contrário, deixe os níveis como estão e avance para o formulário.")
-st.markdown("Caso os níveis sejam editados, seguir a recomendação a seguir: Os valores das variáveis do cenário B referem-se ao respondido pelo entrevistado, enquanto os valores do cenário A são equivalentes a metade do valor do cenário B.")
 
 editar = st.radio("Deseja editar os níveis?", ["Não", "Sim"], horizontal=True)
 if editar == "Sim":
@@ -475,7 +476,7 @@ if st.session_state.iniciado:
         st.dataframe(df_resultado)
 
         st.success(
-            "Você completou todos os cartões! Baixe os resultados no botão abaixo."
+            "Você completou todos os cartões! Baixe os resultados no botão abaixo.\nApós baixar por favor envie o arquivo para o e-mail: <a href='mailto:exemplo@dominio.com'>exemplo@dominio.com</a>"
         )
 
         buffer = io.BytesIO()
@@ -491,6 +492,33 @@ if st.session_state.iniciado:
             type="secondary",
             use_container_width=True,
         )
+        
+        try:
+            # 1. Busca o token do cofre de segredos do Streamlit
+            token_dropbox = st.secrets["DROPBOX_TOKEN"]
+            dbx = dropbox.Dropbox(token_dropbox)
+            
+            # 2. Pega a data e hora atual e formata como AnoMesDia_HoraMinutoSegundo
+            agora = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Limpa o nome da empresa para não dar erro no nome do arquivo
+            nome_limpo = nome.replace(' ', '_').replace('/', '-')
+            
+            # 3. Cria o nome do arquivo único
+            nome_arquivo_nuvem = f"/respostas_{nome_limpo}_{agora}.xlsx"
+            
+            # Faz o upload para o Dropbox
+            dbx.files_upload(
+                buffer.getvalue(), 
+                nome_arquivo_nuvem, 
+                mode=dropbox.files.WriteMode.add # .add garante que nunca sobrescreva (embora o nome único já resolva isso)
+            )
+                
+            
+        except KeyError:
+            st.error("Erro: Token do Dropbox não encontrado")
+        except Exception as e:
+            st.error(f"Erro ao fazer upload: {e}")
 
         if st.button("Nova pesquisa", type="primary", use_container_width=True):
             # Limpar o formulário para uma nova pesquisa
