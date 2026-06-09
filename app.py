@@ -221,7 +221,12 @@ if not st.session_state.iniciado:
             st.session_state.iniciado = True
             st.rerun()
 
+
+
 if st.session_state.iniciado:
+    if "upload_concluido" not in st.session_state:
+        st.session_state.upload_concluido = False
+    
     if "cartoes_embaralhados" not in st.session_state:
         options = [np.random.permutation(list) for list in batch_list]
         options = [int(x) for sublist in options for x in sublist]
@@ -494,21 +499,24 @@ if st.session_state.iniciado:
         )
         
         try:
-            dbx = dropbox.Dropbox(
-                app_key=st.secrets["DROPBOX_APP_KEY"],
-                app_secret=st.secrets["DROPBOX_APP_SECRET"],
-                oauth2_refresh_token=st.secrets["DROPBOX_REFRESH_TOKEN"]
-            )
-            
-            agora = datetime.now().strftime("%Y%m%d_%H%M%S")
-            nome_limpo = nome.replace(' ', '_').replace('/', '-')
-            nome_arquivo_nuvem = f"/respostas_{nome_limpo}_{agora}.xlsx"
-            
-            dbx.files_upload(
-                buffer.getvalue(), 
-                nome_arquivo_nuvem, 
-                mode=dropbox.files.WriteMode.add
-            )
+            if not st.session_state.upload_concluido:
+                dbx = dropbox.Dropbox(
+                    app_key=st.secrets["DROPBOX_APP_KEY"],
+                    app_secret=st.secrets["DROPBOX_APP_SECRET"],
+                    oauth2_refresh_token=st.secrets["DROPBOX_REFRESH_TOKEN"]
+                )
+                
+                agora = datetime.now().strftime("%Y%m%d_%H%M%S")
+                nome_limpo = nome.replace(' ', '_').replace('/', '-')
+                nome_arquivo_nuvem = f"/respostas_{nome_limpo}_{agora}.xlsx"
+                
+                dbx.files_upload(
+                    buffer.getvalue(), 
+                    nome_arquivo_nuvem, 
+                    mode=dropbox.files.WriteMode.add
+                )
+                
+                st.session_state.upload_concluido = True
             
         except KeyError as e:
             st.error(f"Erro ao fazer upload: {e}")
