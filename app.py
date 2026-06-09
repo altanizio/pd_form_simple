@@ -494,7 +494,6 @@ if st.session_state.iniciado:
         )
         
         try:
-            # Usa as chaves para que a biblioteca renove o token automaticamente
             dbx = dropbox.Dropbox(
                 app_key=st.secrets["DROPBOX_APP_KEY"],
                 app_secret=st.secrets["DROPBOX_APP_SECRET"],
@@ -505,14 +504,11 @@ if st.session_state.iniciado:
             nome_limpo = nome.replace(' ', '_').replace('/', '-')
             nome_arquivo_nuvem = f"/respostas_{nome_limpo}_{agora}.xlsx"
             
-            # Faz o upload
             dbx.files_upload(
                 buffer.getvalue(), 
                 nome_arquivo_nuvem, 
                 mode=dropbox.files.WriteMode.add
             )
-            
-            st.success(f"✅ Arquivo salvo no Dropbox com sucesso! ({nome_arquivo_nuvem})")
             
         except KeyError as e:
             st.error(f"Erro ao fazer upload: {e}")
