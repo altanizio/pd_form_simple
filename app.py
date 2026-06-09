@@ -494,29 +494,28 @@ if st.session_state.iniciado:
         )
         
         try:
-            # 1. Busca o token do cofre de segredos do Streamlit
-            token_dropbox = st.secrets["DROPBOX_TOKEN"]
-            dbx = dropbox.Dropbox(token_dropbox)
+            # Usa as chaves para que a biblioteca renove o token automaticamente
+            dbx = dropbox.Dropbox(
+                app_key=st.secrets["DROPBOX_APP_KEY"],
+                app_secret=st.secrets["DROPBOX_APP_SECRET"],
+                oauth2_refresh_token=st.secrets["DROPBOX_REFRESH_TOKEN"]
+            )
             
-            # 2. Pega a data e hora atual e formata como AnoMesDia_HoraMinutoSegundo
             agora = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # Limpa o nome da empresa para não dar erro no nome do arquivo
             nome_limpo = nome.replace(' ', '_').replace('/', '-')
-            
-            # 3. Cria o nome do arquivo único
             nome_arquivo_nuvem = f"/respostas_{nome_limpo}_{agora}.xlsx"
             
-            # Faz o upload para o Dropbox
+            # Faz o upload
             dbx.files_upload(
                 buffer.getvalue(), 
                 nome_arquivo_nuvem, 
-                mode=dropbox.files.WriteMode.add # .add garante que nunca sobrescreva (embora o nome único já resolva isso)
+                mode=dropbox.files.WriteMode.add
             )
-                
             
-        except KeyError:
-            st.error("Erro: Token do Dropbox não encontrado")
+            st.success(f"✅ Arquivo salvo no Dropbox com sucesso! ({nome_arquivo_nuvem})")
+            
+        except KeyError as e:
+            st.error(f"Erro ao fazer upload: {e}")
         except Exception as e:
             st.error(f"Erro ao fazer upload: {e}")
 
